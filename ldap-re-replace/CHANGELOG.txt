@@ -1,0 +1,101 @@
+ldap-preg_replace.pl CHANGELOG
+------------------------------
+
+Version 1.1.2 (2015-11-05):
+* Removed warnings for keys on scalar
+
+Version 1.1.1 (2015-05-20):
+* Implemented cleander disconnect from LDAP
+
+Version 1.1 (2015-03-28):
+* Convinience release: password asking is now done after
+   verifying parameters
+
+Version 1.0 (2014-11-28):
+This version brings to you new features, performance improvements and clearer
+code. One of the main changes is a new command line invocation regarding -a and
+-r parameters because now several rules are supported. This means that options
+-a/-A were dropped (the program will complain if you still try touse them!) and
+several invocations of -r are possible. Also the syntax of -r has changed!
+See the README.txt and use parameter -h for details.
+The complete changelist is as following:
+* New syntax for -r parameter:
+  - several invocations allowed
+  - -a/-A were dropped as the attribute is now specified in -r
+  - new, more simple behavior for application of regex,
+    most important with ^ and &, as well as patterns like /.*/; those patterns
+    behave a little differently now and will match alwas on an additional
+    empty-string-value for each attribute (like using -A in prior versions)
+* Enhanced documentation (both in codebase and in help messages)
+* New debug options: -v can be given several times now, yielding more messages
+* New -l (--ldif) parameter which results in a LDIF-change file being written.
+  This is especially useful with option -d if you just want to generate a
+  changefile but don't want the changes be applied instantly (revising, etc)
+* New --ask parameter to allow you to explicitely confirm each entry change
+* New -t (--timelimit) and -s (--sizelimit) parameters to request such
+  limits from the LDAP server; -s my be useful with -d to testing your patterns
+* New -P (--pagesize) parameter to support and control LDAP simplePaging,
+  please note that paging is enabled by default. Use '-P 0' to disable paging.
+* Support for LDAP-URLs in -H, including setting baseDN, scope and filter
+* All options have long paramter equivalents now
+
+
+Version 0.9.6 (2013-08-12):
+* Cosmetic fix: printing of newline after manually entering password
+
+
+Version 0.9.5 (2013-03-13):
+* Security release:
+   - Obscuring of process name (hiding password from commandline)
+   - If -p is omitted, the program will ask for it (if not run
+     interactively, it will read it from STDIN)
+* New -S parameter for scoping
+
+
+Version 0.9.4-1 (2009-04-24)
+* Updated README to better describe attribute adding
+
+
+Version 0.9.4 (2009-04-23)
+* New -A parameter
+* Added description of -A to README
+* Slightly changed default behavior:
+  - providing -a now only operates on present values like in 0.9.2
+  - providing an empty pattern (s/^$/...) must be used now to indicate value addition
+    if emtpys attribute is not set
+  - -A together with an empty pattern indicates that value addition should also occur
+    if the entries attribute already contains values
+* Some comment changes
+
+
+Version 0.9.3-1 (2009-03-04)
+* Forgot to add -F parameter to GetOpt, so -F was not accessible in 0.9.3
+* Added description of -F and filtertuning to README file
+
+
+Version 0.9.3 (2009-03-03):
+* It is now possible to add values to empty attributes by specifying a empty from-regex,
+  e.g. s/^$/foo/ will add "foo" to empty attributes (s//foo/ will prepend etc)
+* Filtertuning is dependent on the regex now; if one of the combinations
+  s// (will trigger a warning), s/^/, s/$/ or s/^$/ is used, the filter is used as-is. In other cases, the
+  specified filter will, as already implemented, be embedded in "(&($yourattr=*)$yourfilter)", so the search
+  will only consider entries with values in the attribute which will improve
+  search speed significantly (especially at large searches!). Since this is not only
+  correct (for example if you use alternative regex-delimeters), -F was introduced
+  to override that behaviour (see below).
+* Added new parameter -F to enable the user to bypass search performance tuning
+  Details are described in the advanced help page (-h)
+* Some minor comment changes (added some and translated the german ones into english)
+
+
+Version 0.9.2 (2008-12-10):
+* Changed parameter behavior:
+  - -H is optional now and defaults to 'localhost'
+  - -p can be empty now by specifying '-p ""'
+
+Version 0.9.1 (2008-08-04):
+* Just some comment changes and additional help.
+  The codebase was not changed and is equal to 0.9.
+
+Version 0.9 (2008-07-24):
+ * initial release

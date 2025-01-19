@@ -1,0 +1,108 @@
+ldap-csvexport.pl CHANGELOG
+------------------------------
+
+Version 1.10 (2024-05-22):
+* Added new [format=...] flag to option -a in order to format GeneralizedTime attribute values
+
+Version 1.9 (2016-05-23):
+* Added fixed width option to attribute flags (global option: -w)
+
+Version 1.8 (2015-12-01):
+* Bugfix in debug output (chain-reference found value was not printed)
+* New support for \n and friends in -m, -s and -q options (beware shell escaping!).
+
+Version 1.7.3 (2015-05-20):
+* Implemented cleaner disconnect from LDAP
+
+Version 1.7.2 (2015-03-31):
+* Ficed a bug with -a fix=... syntax wrongly not being supported anymore
+
+Version 1.7.1 (2015-03-28):
+* Convinience release: password asking is now done after
+  verifying parameters
+
+Version 1.7 (2015-03-12)
+* New attribute flag: `-a [#]attribute` prints number of values instead of
+  contents. This is useful if one wants to know how many values are present.
+  The flag implicitely turns on multivalue-mode for the attribute and
+  is compatible with attribute chains (like `manager.[#]mail`).
+* Option -H now supports LDAP URLs with all query options, so it is
+  more convinient to call the program (overriding cmdline options):
+  format: ldap[s]://<hostname>:<port>/<base_dn>?<attributes>?<scope>?<filter>
+
+Version 1.6.1 (2015-01-31):
+* New switch -x to disable schema checks
+* Fixed a bug (SF Bug #6) with schema checking; program failed when schema was
+  not accessible. Now it can continue with schema checks diabled.
+* Some little more documentation
+
+Version 1.6 (2015-01-09):
+ * Added support for attribute flags: '[sv]mail' now will select
+   only the first value if overall operation is mv-export (default),
+   whereas '[mv]mail' will export multivalued when parameter -1 is
+   in effect.
+ * Added consistent behaviour when performing chained requests;
+   now in default mode all reference links will be evaluated.
+   Use the new flag feature in case you want to change this,
+   eg '[sv]manager.mail' in case you only want the first manager
+   but all mail adresses of this manager ('[sv]manager.[sv]mail'
+   in case only the first mail of the first manager).
+ * Reimplemented performance for queries; in 1.4 and 1.5 all attributes
+   where requested resulting in more load on the server side and more
+   network bandwith used. 1.6 now only requests the needed attributes.
+
+Version 1.5 (2014-12-17):
+ * Added support for filtering entries by regexp matching on DN.
+   If parameter -F is given (eg '/pattern/'; options like /.../i
+   are supported!), entries whose DN is matching this regexp will
+   be skipped. This may be handy eg. to exclude certain subtrees.
+
+Version 1.4 (2014-12-16):
+ * Added support for chained requests (eg. -a 'manager.sn')
+ * Added support for timelimit (-T) and sizelimit (-c)
+
+Version 1.3.6 (2013-11-28):
+ * New -C parameter switch to disable CSV header output
+
+Version 1.3.5 (2013-08-12):
+ * Cosmetic fix: printing of newline after manually entering password
+
+Version 1.3.4 (2013-03-13):
+ * Security release:
+   - Obscuring of process name (hiding password from commandline)
+   - If -p is omitted, the program will ask for it (if not run
+     interactively, it will read it from STDIN)
+
+Version 1.3.3 (2013-02-26):
+ * Sort option is now optional and disabled by default.
+ * Sorting of unrequested search attributes is now supported (if by server, too)
+ * New feature to print fixed strings in columns
+ * Changed escaping of -a: Now escaping is optional and MUST be performed
+   if attribute flavors are to be selected! (until 1.3.2 semicolon was used
+   automatically for flavors)
+
+Version 1.3.2 (2012-11-09):
+ * Bugfix for paging: the last page was not processed correctly.
+
+Version 1.3.1 (2012-07-02):
+ * Support for timeouts
+ * New feature to be able to extract DNs, RDNs and parent DNs
+
+Version 1.2.1 (2011-09-15):
+ * Bugfix for paging support (fixes sf-tracker-id #3389040)
+
+Version 1.2 (2011-04-05):
+ * New support for paging (parameter -l), thanks to FrenkX
+ * New -S parameter to select the scope of the LDAP search
+
+Version 1.1 (2011-03-08):
+ * Bugfix for -a parameter (Paramter-change!):
+   The semicolon MUST be escaped to be used as attribute selection separator, because LDAP allows "attribute flavors":
+      -a 'sn,givenName,description;lang-en'  => sn, givenName, description;lang-en
+      -a 'sn,givenName,description\;lang-en' => sn, givenName, description, lang-en
+   This changes behavior of the -a parameter compared to 1.0, so please check your scripts. If you did rely on this,
+   you will select one attribute because the list won't got split anymore.
+ * Bugfix for empty csv fields: now they get properly enclosed in quote chars (parameter -q).
+
+Version 1.0 (2008-12-10 10:00):
+ * initial public release

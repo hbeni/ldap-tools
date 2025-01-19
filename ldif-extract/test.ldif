@@ -1,0 +1,44 @@
+dn: dc=structure-net, dc=de
+objectclass: organization
+objectclass: top
+o: Structure Net
+l: Hamburg
+postalcode: 21033
+streetaddress: Billwiese 22
+
+dn: ou=Sales, dc=structure-net, dc=de
+objectclass: organizationalunit
+ou: Sales
+description: Verkauf
+telephonenumber: 040-7654321
+facsimiletelephonenumber: 040-7654321
+
+dn: ou=Development, dc=structure-net, dc=de
+objectclass: organizationalunit
+ou: Development
+description: Entwicklung
+telephonenumber: 040-7654321
+facsimiletelephonenumber: 040-7654321
+
+dn: ou=Support, dc=structure-net, dc=de
+objectclass: organizationalunit
+ou: Support
+description: Support
+telephonenumber: 040-7654321
+facsimiletelephonenumber: 040-7654321
+
+dn: uid=admin, dc=structure-net, dc=de
+objectclass: person
+objectclass: organizationalperson
+objectclass: inetorgperson
+cn: admin
+cn: Systemverwalter
+cn: Thomas Bendler
+sn: Bendler
+uid: admin
+mail: tbendler@structure-net.de
+l: Hamburg
+postalcode: 21033
+streetaddress: billwiese 22
+telephonenumber: 040-7654321
+facsimiletelephonenumber: 040-7654321

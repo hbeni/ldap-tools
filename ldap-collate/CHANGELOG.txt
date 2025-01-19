@@ -1,0 +1,5 @@
+ldap-collate.pl CHANGELOG
+------------------------------
+
+Version 0.1 (2016-08-29):
+ * initial public release. Should be mostly stable.

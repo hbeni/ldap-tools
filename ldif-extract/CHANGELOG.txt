@@ -1,0 +1,33 @@
+ldif-extract.pl CHANGELOG
+------------------------------
+
+Version 1.6 (2015-xx-xx):
+ * New support for special sequences in CSV options ('fs', 'fd', 'ms'),
+   now \n, \r, \t and \s can be used. Escape with \\n, \\r and so on
+   but beware the shell interpolating! (use single quotes for options)
+
+
+Version 1.5.1 (2015-11-05):
+ * Added compatibility to Perl<=5.20
+
+
+Version 1.5 (2015-11-04):
+ * New feature: -u can now clean LDIF files from duplicate attribute values
+
+
+Version 1.4 (2015-05-20):
+ * Fixed a small bug
+ * New feature: -C can now be used turn on and configure ldif2csv conversion!
+
+
+Version 1.3.2 (2015-03-31):
+ * Fixed a bug with DN pattern always matching
+
+
+Version 1.3.1 (2015-03-28):
+ * Greatly enhanced options (more grep options!)
+ * Bugfix with wrongly matches
+
+
+Version 1.0 (2015-01-22):
+ * initial public release

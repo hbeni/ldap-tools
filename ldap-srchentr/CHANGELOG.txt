@@ -1,0 +1,41 @@
+ldap-searchEntries.pl CHANGELOG
+------------------------------
+
+Version 0.9 (2023-07-20):
+* fixed a bug with regex not beeing compatible due to missing escaping
+
+Version 0.8 (2016-05-23):
+* csv mode now supports attribute printing
+* support for empty and unknown selected attributes (fixed hard abort)
+
+Version 0.7 (2015-11-12):
+* New parameter -i to specify input file for those cases where you want not to
+  use STIN redirection
+* Correction in usage help (ldap-csvexport attribute flags are not supported)
+
+Version 0.6.3 (2015-05-20):
+* Implemented cleaner disconnect from LDAP
+
+Version 0.6.2 (2015-03-28):
+ * Convinience release: password asking is now done after
+   verifying parameters
+
+Version 0.6.1 (2015-03-16):
+ * Bugfix for parsing filter placeholders
+ * Support for LDAP URLs (specifying host, port, scope, base, filter
+   and attributes in single -H parameter)
+ * New additionally supported placeholder format: '%{n}'
+   (the other ones still work: '%n' and '{%n}')
+
+Version 0.5 (2013-08-12):
+ * Cosmetic fix: CSV-header contained unnecessary separator
+ * Cosmetic fix: printing of newline after manually entering password
+
+Version 0.4 (2013-03-13):
+ * Security release:
+   - Obscuring of process name (hiding password from commandline)
+   - If -p is omitted, the program will ask for it (if not run
+     interactively, it will read it from STDIN)
+
+Version 0.3 (2011-10-20 15:32):
+ * initial public release. Should be mostly stable.
