@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #############################################################################
 #  Export LDAP entries in csv format to STDOUT                              #
-#  Version: 1.10                                                            #
+#  Version: 1.11                                                            #
 #  Author:  Benedikt Hallinger <beni@hallinger.org>                         #
 #           FrenkX <FrenkX@tamotuA.de> (paging support)                     #
 #                                                                           #
@@ -89,8 +89,23 @@ my $no_csv_hdr  = 0;
 my $re_dnfilter = "";
 my $skip_schema = 0;
 my $fixedwidth  = 0;
+my $compattrsep = " ";
 
 my @attr_flags = (); # 2-dimensional-array: attr_flags[attr-csvfield-position][chaining-level] = "flagstring"
+
+# Sub to get real attr name and compound name from attr like "foo(bar)" or "foo([sep]bar)"
+# Expects attr desc; returns array with two indexes (0=base name, 1=compound name or empty string, 2=optional separator)
+sub splitCompoundAttr {
+	my $attrDesc = $_[0];
+	my @res;
+	if ($attrDesc =~ /(\w+)\((?:\[(.+?)\])?(\w+)\)/) {
+		push @res, $1, $3, $2;
+	} else {
+		push @res, $attrDesc, "", "";
+	}
+	@res
+}
+
 
 # Mask password parameter if given, so it wont show at process list
 my $cmdname = $0;
@@ -195,7 +210,7 @@ if ($Options{'a'}) {
 			if ($achain =~ s/^\[(.+?)\]//) {
 				$flag = $1;
 				$flag =~ s/\\\././g; # unescape escaped dots
-				if ($flag !~ /^sv$|^mv$|^#|fw(-?\d+)$|^format=[%\.a-zA-Z_-]+$/) {
+				if ($flag !~ /^sv$|^mv=?(.*)$|^#|fw=?(-?\d+)$|^format=[%\.a-zA-Z_-]+$/) {
 					print STDERR "Unknown flag used for attribute '$a': '$flag'!\n";
 					usage();
 					exit 1;
@@ -282,11 +297,16 @@ if (! $skip_schema) {
 		foreach my $a (@attributes) {
 			# skip check if its a "magic" attribute
 			$a =~ /^(d?dn|rdn|pdn|fix=.*)$/ && next;
+
+			# get clean attr name
+			my @sCa_ret = splitCompoundAttr($a);
+			my $a_base = $sCa_ret[0];
 		
-			my $a_href = $ldap_schema->attribute($a);
+			my $a_href = $ldap_schema->attribute($a_base);
 			if (defined($a_href)) {
 				# attribute exists
 				push(@req_attrs, $a);
+				if ($verbose) { print STDERR "  $a: OK\n"; }
 		
 			} else {
 				# possible typo or chained request...
@@ -301,6 +321,8 @@ if (! $skip_schema) {
 						# in case this is the base of a chain, add it to requested  attrs
 						if ($achained eq $achain[0]) {
 							push(@req_attrs, $achained);
+							if ($verbose) { print STDERR "  $achained: OK\n"; }
+							if ($verbose) { print STDERR "  $a: OK (chained)\n"; }
 						}
 					} else {
 						print STDERR "unknown attribute type requested: '$achained'!\n";
@@ -331,11 +353,12 @@ if ($sortorder ne '') {
 	my $order = Net::LDAP::Control::Sort->new( order => $sortorder );
 	push(@controls, $order);
 }
+my @req_attrs_ldap = map {my @ra = splitCompoundAttr($_); $ra[0]} @req_attrs;
 my @searchArgs = (
 	base      => $searchbase, 
 	filter    => $filter, 
 	scope     => $scope,
-	attrs     => \@req_attrs,
+	attrs     => \@req_attrs_ldap,
 	sizelimit => $sizelimit,
 	timelimit => $timelimit,
 	control   => \@controls
@@ -505,8 +528,16 @@ sub resolveAttributeValue {
 
 	# singlevalue / multivalue flag:
 	my $flag_sv = ($singleval == 1); # get default for sv/mv-flag in case it was not overridden
+	my $flag_mvsep = $mvsep;
 	if ($all_attr_flags =~ /(mv|sv)/) {
 		$flag_sv = ($1 ne "mv");
+		if ($flag_sv == 0 && $all_attr_flags =~ /mv=?(.+)/) {
+			# see if there is an override for the mv-separator for this field
+			$flag_mvsep = $1;
+			$flag_mvsep =~ s/((?<!\\)\\[tsrn])/"qq{$flag_mvsep}"/gee; # support \n and some of its friends
+			$flag_mvsep =~ s/\\\\/\\/g;
+		}
+
 	}
 
 	# count flag
@@ -517,7 +548,7 @@ sub resolveAttributeValue {
 	}
 
 	# fixed-width flag
-	if ($all_attr_flags =~ /fw(-?\d+)/) {
+	if ($all_attr_flags =~ /fw=?(-?\d+)/) {
 		$flag_fixedwidth = $1;
         }
 
@@ -531,11 +562,30 @@ sub resolveAttributeValue {
 	
 
 	# check schema
+	my @sCa_ret  = splitCompoundAttr($curattr);
+	my $compattr = $sCa_ret[1];
+	$curattr     = $sCa_ret[0];
 	if ($entry->exists($curattr)) {
 		# Attribute exists in schema, retrieve value
 		# (this includes attributes with names like 'foo.bar' that look like chained requests)
 		my $attr    = $entry->get_value($curattr, 'asref' => 1);
 		my @values  = @$attr;
+
+		# in case a compound attr was requested, we need to filter the results by its name
+		if ($compattr ne "") {
+			my $flag_compattrsep = $compattrsep;
+			if ($sCa_ret[2] ne "") { $flag_compattrsep = $sCa_ret[2]; }
+			if ($verbose) { print STDERR "compound attribute fetched (base='$curattr', comp='$compattr', sep='$flag_compattrsep'), filtering values...\n"; }
+			my @filteredCompValues;
+			foreach my $compVal (@values) {
+				if ($compVal =~ /^$compattr$flag_compattrsep(.+)$/i) {
+					push @filteredCompValues, $1;
+				}
+			}
+			@values = @filteredCompValues;
+		}
+	
+
 		if ($flag_count) {
 			# just return count
 			$val_str = scalar(@values);
@@ -544,9 +594,9 @@ sub resolveAttributeValue {
 			if (!$flag_sv) {
 				# retrieve all values and separate them via $mvsep
 				foreach my $val (sort { return 1 if lc($a) lt lc($b); return -1 if lc($a) gt lc($b); return 0;} @values) {
-					$val_str = "$val_str$val$mvsep"; # add all values to field
+					$val_str = "$val_str$val$flag_mvsep"; # add all values to field
 				}
-				$val_str =~ s/\Q$mvsep\E$//; # eat last MV-Separator
+				$val_str =~ s/\Q$flag_mvsep\E$//; # eat last MV-Separator
 			} else {
 				# user wants only the first value
 				$val_str = shift(@values);
@@ -610,11 +660,12 @@ sub resolveAttributeValue {
 				}
 			}
 
-			$val_str =~ s/\Q$mvsep\E$//; # eat last MV-Separator (sv+mv cases)
+			$val_str =~ s/\Q$flag_mvsep\E$//; # eat last MV-Separator (sv+mv cases)
 
 		} else {
 			# attribute does not exist at entry:
 			# -> keep empty value, which was initialized above (depending on flag)
+			if ($verbose) { print STDERR "  ok (target value was empty)\n"; }
 		}
 
 	} elsif ($curattr =~ /^d?dn$/i) {
@@ -672,11 +723,13 @@ sub usage {
 	print "        pdn:   print DN of parent entry\n";
 	print "        fix=x: print fixed value 'x'\n";
 	print "      Supports chained requests: att1.attr2 (eg. 'manager.givenName', see -h)\n";
+	print "      Supports compound attributes: attr1(key) (see -h)\n";
 	print "      Flags can be given by prepending the attr name with '[<flag>]attrname':\n";
-	print "        'sv':    request single-value handling (useful to negate default behavior)\n";
-	print "        'mv':    request multi-value handling (useful to negate parameter -1)\n";
-	print "        '#':     print number of values instead of contents (implies [mv])\n";
-	print "        'fw<N>': set the field to fixed-width of length N (see -w below)\n";
+	print "        'sv':     request single-value handling (useful to negate default behavior)\n";
+	print "        'mv':     request multi-value handling (useful to negate parameter -1)\n";
+	print "                  'mv=<sep>' can be used to override the mv-seperator for this field.\n";
+	print "        '#':      print number of values instead of contents (implies [mv])\n";
+	print "        'fw=<N>': set the field to fixed-width of length N (see -w below)\n";
 	print "        'format=<N>': Format LDAP GeneralizedTime (eg. 'format=pretty', see -h)\n";
 	print "  -b  LDAP searchbase\n";
 	print "\nOptional options:\n";
@@ -739,6 +792,12 @@ sub help {
 	print "      flavor (wrong):   -a 'sn,description;lang-en'   => sn, description, lang-en\n";
 	print "      fix (correct):    -a 'sn,fix=value1\\,\\ value2'   => sn, 'value1, value2'\n";
 	print "    Please note, that until 1.3.2 the escaping of the semicolon was inversed!\n";
+	print "\nCompound attributes in parameter -a:\n";
+	print "    Using the syntax '-a attribute(compoundname)' you can retrieve compound attribute\n";
+	print "    values. They are stored in a multivalued normal attribute in syntax \n";
+	print "    '<compoundname><separator><value>' and can be multivalued.\n";
+	print "    Default separator is a space, but you can change it by giving it in brackets\n";
+	print "    at the start of the compound spec: 'attribute([sep]compoundname)'.\n";
 	print "\nDate formatting of attributes using [format=<N>] in -a:\n";
 	print "    Some attribues are in GeneralizedTime syntax (RFC 4517), and returned like\n";
 	print "    'YYYYmmddHHMMSSZ'. This is hard to read. By specifying the [format=<N>] flag,\n";
