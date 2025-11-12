@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #############################################################################
 #  Export LDAP entries in csv format to STDOUT                              #
-#  Version: 1.11                                                            #
+#  Version: 1.11.1                                                          #
 #  Author:  Benedikt Hallinger <beni@hallinger.org>                         #
 #           FrenkX <FrenkX@tamotuA.de> (paging support)                     #
 #                                                                           #
@@ -98,7 +98,7 @@ my @attr_flags = (); # 2-dimensional-array: attr_flags[attr-csvfield-position][c
 sub splitCompoundAttr {
 	my $attrDesc = $_[0];
 	my @res;
-	if ($attrDesc =~ /(\w+)\((?:\[(.+?)\])?(\w+)\)/) {
+	if ($attrDesc =~ /([\w\.]+)\((?:\[(.+?)\])?(\w+)\)/) {
 		push @res, $1, $3, $2;
 	} else {
 		push @res, $attrDesc, "", "";
@@ -315,7 +315,10 @@ if (! $skip_schema) {
 				foreach my $achained (@achain) {
 					#TODO: add support for mixed requests eg. '(attr.attr).chained', when attr.attr is a legal attr but
 		        	        #      'chained' is a chained request.... but who on earth does such things!?
-					my $a_href = $ldap_schema->attribute($achained);
+					my @sCa_chain = splitCompoundAttr($achained);
+					my $achained_base = $sCa_chain[0];
+					#my $a_href = $ldap_schema->attribute($achained);
+					my $a_href = $ldap_schema->attribute($achained_base);
 					if (defined($a_href)) {
 						# attribute exists!
 						# in case this is the base of a chain, add it to requested  attrs
@@ -622,7 +625,7 @@ sub resolveAttributeValue {
 		# In the first match this should give $1=>foo, $2=>bar.baz so we can recurse down.
 
 		# get first value of reference attribute
-		if ($verbose) { print STDERR "  Reference requested: performing entry lookup for $1@".$entry->dn()."... "; }
+		if ($verbose) { print STDERR "  Reference '$curattr' requested: performing entry lookup for $1@".$entry->dn()."... "; }
 		if ($entry->exists($1)) {
 			my $attr    = $entry->get_value($1, 'asref' => 1);
                 	my @values  = @$attr;
@@ -643,9 +646,12 @@ sub resolveAttributeValue {
 					if ($subentry) {
 						# entry was found, resolve attribute from there
 						# (in case $2 contains a reference again, we will recurse)
-						if ($verbose) { print STDERR ", foundValue='"; }
-						my $subval = resolveAttributeValue($subentry, $2, $curattr_csvpos, $curattr_chainlvl+1);
-						if ($verbose) { print STDERR $subval."'\n"; }
+						# Also, if the attr is a compound one, we need to adjust the syntax
+						my $chainedAttrName = $2;
+                				if ($compattr ne "") { $chainedAttrName = "$chainedAttrName($compattr)"; }
+						if ($verbose) { print STDERR ", chainedAttrName='$chainedAttrName';"; }
+						my $subval = resolveAttributeValue($subentry, $chainedAttrName, $curattr_csvpos, $curattr_chainlvl+1);
+						if ($verbose) { print STDERR " foundValue='$subval'\n"; }
 
 						# add value as MV in case it was nonempty
 						if ($subval) {
