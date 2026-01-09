@@ -30,7 +30,7 @@
 #    Getopt::Std                                                            #
 #  You can get these modules from your linux package system or from CPAN.   #
 #                                                                           #
-#  Hosted at Sourceforge: https://sourceforge.net/projects/ldap-collate/    #
+#  Hosted at: https://github.com/hbeni/ldap-tools/                          #
 #  Please report bugs and suggestions using the trackers there.             #
 #                                                                           #
 #############################################################################
@@ -452,6 +452,6 @@ sub help {
 	print "  use the program 'recode' to change the encoding of the resulting file.\n";
 	print "  LDAP servers usually serve their data in utf-8. To make the output MS-Excel friendly,\n";
 	print "  do: '$cmdname ... | recode utf8..latin1'.\n";
-	print "\n  If you find bugs, please report them to the SF bugtracker:\n";
-	print "    https://sourceforge.net/projects/ldap-collate/\n";
+	print "\n  If you find bugs, please report them to the bugtracker:\n";
+	print "    https://github.com/hbeni/ldap-tools/issues\n";
 }

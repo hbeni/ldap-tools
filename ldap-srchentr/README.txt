@@ -14,7 +14,7 @@ optionally, enrich the data with data from the ldap server.
 
 
 
-Please also have a look to other related tools hosted on sf.net:
+Please also have a look to other related tools :
 ldap-preg-replace:  Change entries in ldap online with regexp
 ldap-searchEntries: Mass check existence / enrich of entries based on csv
 ldap-collate:       Group and count entries by attributes

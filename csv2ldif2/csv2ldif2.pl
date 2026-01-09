@@ -452,7 +452,9 @@ sub usage {
 	print "For EXCEL csv exports you probably need to adjust -e and -d,\n";
 	print "however this depends on the EXCEL version and your region:\n";
 	print "  ´$0 -e 'CP850' -d ';' [more ortions]´\n";
-	print "\nMore Help and some hints are available using the -h parameter.\n\n";
+	print "\nMore Help and some hints are available using the -h parameter.\n";
+	print "\n  If you find bugs, please report them to the bugtracker:\n";
+        print "    https://github.com/hbeni/ldap-tools/issues\n\n";
 }
 
 sub help {
@@ -515,5 +517,5 @@ sub help {
 }
 
 sub version {
-	print "$0: Convert CSV to LDIF   (Ver 1.1)\n";
+	print "$0: Convert CSV to LDIF   (Ver 1.2)\n";
 }

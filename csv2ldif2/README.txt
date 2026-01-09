@@ -5,7 +5,7 @@ This is a brief description of csv2ldif2.pl, a tool written in perl
 that you can use to convert CSV files to LDIF files that you can
 load into a directory server (like OpenLDAP).
 
-Please also have a look to other related tools hosted on sf.net:
+Please also have a look to other related tools :
 ldap-preg-replace:  Change entries in ldap online with regexp
 ldap-searchEntries: Mass check existence / enrich of entries based on csv
 ldap-collate:       Group and count entries by attributes

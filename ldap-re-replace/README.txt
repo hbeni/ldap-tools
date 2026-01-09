@@ -25,7 +25,7 @@ It takes strings beginning with 1 or 3, followed by variable sized characters
 and then reversing their order: With '1abc', $1=abc and $2=1.
 
 
-Please also have a look to other related tools hosted on sf.net:
+Please also have a look to other related tools :
 ldap-preg-replace:  Change entries in ldap online with regexp
 ldap-searchEntries: Mass check existence / enrich of entries based on csv
 ldap-collate:       Group and count entries by attributes

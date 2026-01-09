@@ -16,7 +16,7 @@
 #    Getopt::Long                                                           #
 #  You can get these modules from your linux package system or from CPAN.   #
 #                                                                           #
-#  Hosted at Sourceforge: https://sourceforge.net/projects/ldap-re-replace/ #
+#  Hosted at: https://github.com/hbeni/ldap-tools/issues                    #
 #  Please report bugs and suggestions using the trackers there.             #
 #                                                                           #
 #############################################################################
@@ -799,8 +799,8 @@ sub help {
 	print "\nTroubleshooting:\n";
 	print "  If you have problems with special characters (e.g. german umlauts),\n";
 	print "  try to set your terminal to UTF8 and retry.\n";
-	print "  If you find bugs, please report them to the SF bugtracker:\n";
-	print "    https://sourceforge.net/projects/ldap-re-replace/\n";
+	print "  If you find bugs, please report them to the bugtracker:\n";
+	print "    https://github.com/hbeni/ldap-tools/issues\n";
 }
 
 # small utility function

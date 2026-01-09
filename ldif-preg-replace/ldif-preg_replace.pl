@@ -293,5 +293,7 @@ sub help {
 	print STDERR "    -> Swap attribute name and value for test ('test: foo' gets 'foo: test').\n\n";
 	print STDERR "  `someCMD | $cmdname ... | $cmdname ... > result.ldif`\n";
 	print STDERR "    -> Execute 'someCMD' (for example ldapsearch!) and pipe the output through\n";
-	print STDERR "       two consecutive modifiers, finally writing the result to 'extract.ldif'.\n\n";
+	print STDERR "       two consecutive modifiers, finally writing the result to 'extract.ldif'.\n";
+	print STDERR "\n  If you find bugs, please report them to the bugtracker:\n";
+        print STDERR "    https://github.com/hbeni/ldap-tools/issues\n\n";
 }

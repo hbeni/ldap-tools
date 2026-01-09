@@ -471,6 +471,8 @@ sub usage {
 	print STDERR "  -v  Invert match result, that is print non matching entries.\n";
 	print STDERR "  -q  quiet mode: do not print matching entries, just set return code.\n";
 	print STDERR "  -h  Show more help and examples.\n";
+	print STDERR "\n  If you find bugs, please report them to the bugtracker:\n";
+        print STDERR "    https://github.com/hbeni/ldap-tools/issues\n";
 }
 
 sub help {
@@ -545,12 +547,12 @@ sub help {
 	print STDERR "    - /^(?!#).+: test/   -> any entry containing  'test' in any attribute\n";
 	print STDERR "                            that is not commented.\n";
 
-	print "\nEscaping special characters (\\n, etc) in csv separator options (-C ...) :\n";
-	print "    When escaping special characters as separators (eg. `-C 'fs=\\\\n'`), be aware that\n";
-	print "    the shell also performs escaping/interpolation: with double quotes the\n";
-	print "    first backslash will be interpolated to a backslash_escape_sequence+'n' wich in\n";
-	print "    turn passes '\\n' to perl, which interprets it as newline. Be sure to always use\n";
-	print "    single quotes in such cases, so the shell does not interpret the argument.\n";
+	print STDERR "\nEscaping special characters (\\n, etc) in csv separator options (-C ...) :\n";
+	print STDERR "    When escaping special characters as separators (eg. `-C 'fs=\\\\n'`), be aware that\n";
+	print STDERR "    the shell also performs escaping/interpolation: with double quotes the\n";
+	print STDERR "    first backslash will be interpolated to a backslash_escape_sequence+'n' wich in\n";
+	print STDERR "    turn passes '\\n' to perl, which interprets it as newline. Be sure to always use\n";
+	print STDERR "    single quotes in such cases, so the shell does not interpret the argument.\n";
 
 	print STDERR "\nUsage examples:\n";
 	print STDERR "  `$cmdname file.ldif`\n";

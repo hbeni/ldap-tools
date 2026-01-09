@@ -10,7 +10,7 @@ that if a match occur, the whole entry is printed. It can deal with
 base64 encoded attributes and features some nice selection features.
 
 
-Please also have a look to other related tools hosted on sf.net:
+Please also have a look to other related tools :
 ldap-preg-replace:  Change entries in ldap online with regexp
 ldap-searchEntries: Mass check existence / enrich of entries based on csv
 ldap-collate:       Group and count entries by attributes

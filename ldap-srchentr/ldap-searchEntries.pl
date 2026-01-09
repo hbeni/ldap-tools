@@ -432,6 +432,6 @@ sub help {
 	print "  do: '$cmdname ... | recode utf8..latin1'.\n\n";
 	print "  In case you get weird output, check the file line ending format. This can be an issue\n";
 	print "  when consuming csv files from windows on a linux system (especially with smb mounts).\n";
-	print "\n  If you find bugs, please report them to the SF bugtracker:\n";
-        print "    https://sourceforge.net/projects/ldap-srchentr/\n";
+	print "\n  If you find bugs, please report them to the bugtracker:\n";
+        print "    https://github.com/hbeni/ldap-tools/issues\n";
 }

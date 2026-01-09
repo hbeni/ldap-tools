@@ -6,7 +6,7 @@ that you can use to easily and quickly count entries and group them by
 an attribute present in an arbitary LDAP directory.
 
 
-Please also have a look to other related tools hosted on sf.net:
+Please also have a look to other related tools :
 ldap-preg-replace:  Change entries in ldap online with regexp
 ldap-searchEntries: Mass check existence / enrich of entries based on csv
 ldap-collate:       Group and count entries by attributes
